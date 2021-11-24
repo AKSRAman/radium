@@ -1,13 +1,14 @@
 const userModel = require("../models/userModel.js")
 const jwt = require('jsonwebtoken')
 
+// 1st problem - create user in database
 const createUser = async function (req, res) {
-   var user = req.body
+   let user = req.body
    let savedData = await userModel.create(user)
    res.send({ msg: savedData })
 }
 
-
+// 2nd problem - do login with valid credentials
 const login = async function (req, res) {
    userName = req.body.name
    userPassword = req.body.password
@@ -20,14 +21,15 @@ const login = async function (req, res) {
    }
 }
 
-
+//3rd problem - get user details with authentication
 const getDetails = async function (req, res) {
    let token = req.headers['x-auth-token']
    if (!token) {
       return res.send({ status: false, message: 'Sorry , No authentication token present' })
    } else {
       let decodedToken = jwt.verify(token, 'AKSRAman')
-      if (decodedToken) {
+      let decodedID = req.params.userId
+      if (decodedToken.userId == decodedID) {
          let userDetails = await userModel.findOne({ _id: req.params.userId, isDeleted: false })
          if (userDetails) {
             res.send({ status: true, data: userDetails })
@@ -40,17 +42,19 @@ const getDetails = async function (req, res) {
    }
 }
 
-
+// 4th problem - put request to update user's details
 const updateDetails = async function (req, res) {
    let token = req.headers['x-auth-token']
    if (!token) {
       return res.send({ status: false, message: 'Sorry , No authentication token present' })
    } else {
       let decodedToken = jwt.verify(token, 'AKSRAman')
-      if (decodedToken) {
-         let updateDetails = await userModel.findByIdAndUpdate(_id, req.body);
+      let decodedID = req.params.userId
+      if (decodedToken.userId == decodedID) {
+         let newEmail = req.body.email
+         let userDetails = await userModel.findOneAndUpdate({ _id: req.params.userId, isDeleted: false }, { email: newEmail }, { new: true })
          if (userDetails) {
-            res.send({ status: true, data: updateDetails })
+            res.send({ status: true, data: userDetails })
          } else {
             res.send({ status: false, message: 'User not found' })
          }
@@ -59,9 +63,6 @@ const updateDetails = async function (req, res) {
       }
    }
 }
-
-
-
 
 module.exports.createUser = createUser
 module.exports.login = login
