@@ -21,7 +21,7 @@ const isValidMobileNum = function (value) {
 
 
 const isValidSyntaxOfEmail = function (value) {
-    if (!(validator.validate(value))) {
+    if (!(validator.validate(value.trim()))) {
         return false
     }
     return true
