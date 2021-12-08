@@ -8,12 +8,7 @@ const registerCollege = async function (req, res) {
         const { name, fullName, logoLink, isDeleted } = req.body;//We are using destructuring property of Javascript
         const requestBody = req.body;
 
-        //---------We are using the split function to check that the college name is in single word or not----------//
-        const collegeval = name.split(" ");
-        const len = collegeval.length
-        if (len > 1) {
-            return res.status(400).send({ status: false, msg: "Abbreviated college name should be in a single word" });
-        }
+    
         //Validate body
         if (!validateBody.isValidRequestBody(req.body)) {
             return res.status(400).send({ status: false, msg: "Please provide college body" });
@@ -23,7 +18,14 @@ const registerCollege = async function (req, res) {
         if (!validateBody.isValid(name)) {
             return res.status(400).send({ status: false, msg: "Please provide college name or college field" });
         }
-
+        
+    //---------We are using the split function to check that the college name is in single word or not----------//
+        const collegeval = name.split(" ");
+        const len = collegeval.length
+        if (len > 1) {
+            return res.status(400).send({ status: false, msg: "Abbreviated college name should be in a single word" });
+        }
+        
         //Validate the link
         if (!validateBody.isValid(logoLink)) {
             return res.status(400).send({ status: false, msg: "Please provide logo link " });
@@ -33,6 +35,7 @@ const registerCollege = async function (req, res) {
         if (!validateBody.isValid(fullName)) {
             return res.status(400).send({ status: false, msg: "Please provide Full college Name or fullName field " });
         }
+        
         let isDBexists = await collegeModel.find();
         let DBlen = isDBexists.length
 
